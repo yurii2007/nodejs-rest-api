@@ -3,8 +3,19 @@ const { Contact } = require("../models/contact");
 const { HttpError, controllerWrapper } = require("../helpers");
 
 const listContacts = async (req, res) => {
+  const filters = Object.entries(req.query).reduce((acc, el) => {
+    if (el[0] === "favorite") {
+      if (el[1].length === 0) return;
+      acc[el[0]] = el[1];
+    }
+    return acc;
+  }, {});
   const { page = 1, limit = 10 } = req.query;
-  const result = await Contact.find({owner: req.user._id}, "-owner", { skip: (page - 1) * limit, limit });
+
+  const result = await Contact.find({ owner: req.user._id, ...filters }, "-owner", {
+    skip: (page - 1) * limit,
+    limit,
+  });
   res.json(result);
 };
 
