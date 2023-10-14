@@ -18,6 +18,10 @@ const contactSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
   },
   { versionKey: false }
 );
@@ -32,6 +36,10 @@ const contactsSchema = Joi.object({
     .required(),
   phone: Joi.string().required(),
   favorite: Joi.boolean().required(),
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+  },
 });
 
 const updateStatusSchema = Joi.object({

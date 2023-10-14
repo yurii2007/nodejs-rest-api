@@ -3,7 +3,19 @@ const { Contact } = require("../models/contact");
 const { HttpError, controllerWrapper } = require("../helpers");
 
 const listContacts = async (req, res) => {
-  const result = await Contact.find();
+  const filters = Object.entries(req.query).reduce((acc, el) => {
+    if (el[0] === "favorite") {
+      if (el[1].length === 0) return;
+      acc[el[0]] = el[1];
+    }
+    return acc;
+  }, {});
+  const { page = 1, limit = 10 } = req.query;
+
+  const result = await Contact.find({ owner: req.user._id, ...filters }, "-owner", {
+    skip: (page - 1) * limit,
+    limit,
+  });
   res.json(result);
 };
 
@@ -20,15 +32,18 @@ const removeContact = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
+  const { _id } = req.user;
   const contact = req.body;
-  const result = await Contact.create(contact);
+  const result = await Contact.create({ ...contact, owner: _id });
   res.status(201).json(result);
 };
 
 const updateContact = async (req, res) => {
   const updatedContact = req.body;
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndUpdate(contactId, updatedContact, { new: true });
+  const result = await Contact.findByIdAndUpdate(contactId, updatedContact, {
+    new: true,
+  });
   if (!result) throw HttpError("Not found", 404);
   res.status(200).json(result);
 };
