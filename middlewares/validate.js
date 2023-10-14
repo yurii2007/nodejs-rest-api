@@ -6,9 +6,7 @@ const validate = (schema) => {
     if (error) {
       next(
         HttpError(
-          req.method === "PUT"
-            ? "missing fields"
-            : error.message.replace(/"/g, ""),
+          req.method === "PUT" ? "missing fields" : error.message.replace(/"/g, ""),
           400
         )
       );
@@ -18,6 +16,4 @@ const validate = (schema) => {
   return func;
 };
 
-module.exports = {
-  validate,
-};
+module.exports = validate;
