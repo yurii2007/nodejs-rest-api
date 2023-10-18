@@ -1,5 +1,5 @@
 FROM node:18
-WORKDIR /Users/ruzhu/Desktop/nodejs-rest-api/app
+WORKDIR /app
 COPY package*.json ./
 RUN npm i
 COPY . .
